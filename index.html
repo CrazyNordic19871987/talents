@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioCrafters 2026 - Геймифицированная платформа</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #0a0f1a;
+            --accent: #00d4aa;
+            --accent-alt: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --white: #ffffff;
+            --gray: #9ca3af;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --success: #22c55e;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--primary); color: var(--white); min-height: 100vh; background-image: radial-gradient(ellipse at 20% 20%, rgba(0, 212, 170, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%); }
+        .header { position: sticky; top: 0; z-index: 1000; background: rgba(10, 15, 26, 0.95); backdrop-filter: blur(20px); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 12px; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--accent-cyan)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .logo-text { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.3rem; background: linear-gradient(90deg, var(--accent), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-sub { font-size: 0.7rem; color: var(--gray); display: block; }
+        .nav { display: flex; gap: 8px; flex-wrap: wrap; }
+        .nav-btn { padding: 10px 18px; border-radius: 10px; cursor: pointer; background: transparent; border: 1px solid var(--border); color: var(--gray); font-weight: 600; font-size: 0.85rem; transition: all 0.3s; }
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.05); color: var(--white); }
+        .nav-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 212, 170, 0.3); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; margin-bottom: 8px; background: linear-gradient(90deg, var(--accent), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-muted { color: var(--gray); font-size: 0.9rem; margin-bottom: 24px; }
+        .card { background: linear-gradient(135deg, var(--card-bg), #162032); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
+        .card-title { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; color: var(--gray); }
+        .form-control { width: 100%; padding: 12px 16px; border-radius: 10px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); color: #ffffff; font-size: 0.95rem; font-family: inherit; }
+        .form-control:focus { outline: none; border-color: var(--accent); }
+        .form-control option { background: #1e293b; color: #ffffff; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .btn { padding: 12px 24px; border-radius: 10px; cursor: pointer; background: var(--accent); color: #000; border: none; font-weight: 700; font-size: 0.95rem; transition: all 0.3s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 212, 170, 0.3); }
+        .btn-purple { background: var(--accent-purple); color: white; }
+        .search-box { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-box input, .search-box select { flex: 1; min-width: 150px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; }
+        .stat-num { font-size: 2.5rem; font-weight: 800; color: var(--accent); }
+        .stat-label { font-size: 0.8rem; color: var(--gray); margin-top: 4px; }
+        .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .student-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; cursor: pointer; transition: all 0.3s; }
+        .student-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+        .student-card.selected { border-color: var(--accent); box-shadow: 0 0 30px rgba(0, 212, 170, 0.3); }
+        .student-avatar { width: 56px; height: 56px; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 12px; color: #000; }
+        .student-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 4px; color: var(--white); }
+        .student-info { color: var(--gray); font-size: 0.85rem; }
+        .student-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .badge-bio { background: rgba(0, 212, 170, 0.3); color: var(--accent); }
+        .badge-eng { background: rgba(139, 92, 246, 0.3); color: var(--accent-purple); }
+        .badge-media { background: rgba(245, 158, 11, 0.3); color: var(--accent-alt); }
+        .badge-age { background: var(--accent); color: #000; }
+        .badge-squad { background: var(--accent-alt); color: #000; }
+        .badge-shift { background: var(--accent-purple); color: white; }
+        .badge-dept { background: var(--accent-cyan); color: #000; }
+        .progress-bar { height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; margin-top: 12px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-cyan)); border-radius: 4px; }
+        .profile-header { display: flex; align-items: center; gap: 24px; padding: 32px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(139, 92, 246, 0.1)); border: 2px solid var(--accent); border-radius: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+        .avatar-large { width: 100px; height: 100px; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 700; flex-shrink: 0; color: #000; }
+        .profile-info { flex: 1; min-width: 200px; }
+        .profile-name { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 8px; color: var(--white); }
+        .profile-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .profile-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+        .stat-box { text-align: center; padding: 16px 20px; background: rgba(255, 255, 255, 0.05); border-radius: 16px; }
+        .stat-box .stat-num { font-size: 2rem; color: var(--accent); }
+        .level-progress { display: flex; align-items: center; gap: 16px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 16px; min-width: 200px; }
+        .level-badge-large { width: 60px; height: 60px; background: linear-gradient(135deg, var(--accent-alt), var(--accent)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: #000; }
+        .xp-bar { flex: 1; }
+        .xp-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--gray); margin-bottom: 6px; }
+        .xp-fill-container { height: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; overflow: hidden; }
+        .xp-current { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-alt)); border-radius: 6px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .tab-nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 20px; border-radius: 10px; cursor: pointer; background: rgba(255, 255, 255, 0.05); border: 2px solid transparent; color: var(--gray); font-weight: 600; }
+        .tab-btn.bio.active { background: rgba(0, 212, 170, 0.2); border-color: var(--accent); color: var(--accent); }
+        .tab-btn.eng.active { background: rgba(139, 92, 246, 0.2); border-color: var(--accent-purple); color: var(--accent-purple); }
+        .tab-btn.media.active { background: rgba(245, 158, 11, 0.2); border-color: var(--accent-alt); color: var(--accent-alt); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .task-list { display: flex; flex-direction: column; gap: 12px; }
+        .task-day { display: flex; align-items: center; gap: 16px; padding: 16px; background: rgba(255, 255, 255, 0.03); border-radius: 12px; border: 1px solid var(--border); }
+        .task-day.completed { background: rgba(0, 212, 170, 0.1); border-color: var(--accent); }
+        .task-number { width: 40px; height: 40px; background: var(--accent); color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+        .task-content { flex: 1; }
+        .task-title { font-weight: 600; margin-bottom: 4px; color: var(--white); }
+        .task-desc { font-size: 0.85rem; color: var(--gray); }
+        .task-rating { display: flex; gap: 8px; align-items: center; }
+        .checkbox { width: 36px; height: 36px; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .checkbox.checked { background: var(--accent-purple); border-color: var(--accent-purple); }
+        .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+        .achievement { padding: 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 12px; text-align: center; cursor: pointer; }
+        .achievement.earned { background: rgba(0, 212, 170, 0.2); border-color: var(--accent); }
+        .achievement:hover { transform: scale(1.05); }
+        .achievement-icon { font-size: 2rem; margin-bottom: 8px; }
+        .achievement-name { font-size: 0.75rem; font-weight: 600; color: var(--white); }
+        .no-data { text-align: center; padding: 60px 20px; color: var(--gray); }
+        .no-data-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.5; }
+        .toast { position: fixed; bottom: 24px; right: 24px; padding: 16px 24px; background: var(--success); color: #000; border-radius: 12px; font-weight: 600; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 9999; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .radar-container { position: relative; width: 100%; max-width: 400px; margin: 0 auto; }
+        .competencies-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .comp-item { padding: 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 12px; text-align: center; cursor: pointer; }
+        .comp-item:hover { transform: scale(1.05); border-color: var(--accent); background: rgba(0, 212, 170, 0.1); }
+        .comp-icon { font-size: 2rem; margin-bottom: 8px; }
+        .comp-name { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: var(--white); }
+        .comp-value { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+        .comp-bar { height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+        .comp-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-purple)); border-radius: 3px; }
+        .projects-list { display: flex; flex-direction: column; gap: 12px; }
+        .project-item { display: flex; align-items: center; gap: 16px; padding: 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 12px; }
+        .project-icon { font-size: 2rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); border-radius: 12px; }
+        .project-info { flex: 1; }
+        .project-name { font-weight: 700; margin-bottom: 4px; color: var(--white); }
+        .project-desc { font-size: 0.85rem; color: var(--gray); }
+        .project-status { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .status-done { background: rgba(34, 197, 94, 0.3); color: #22c55e; }
+        .status-progress { background: rgba(245, 158, 11, 0.3); color: var(--accent-alt); }
+        .status-planned { background: rgba(139, 92, 246, 0.3); color: var(--accent-purple); }
+        .disc-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .disc-type-card { padding: 20px; background: rgba(0, 212, 170, 0.15); border-radius: 16px; border: 1px solid var(--accent); }
+        .disc-type-name { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+        .disc-type-desc { color: var(--gray); font-size: 0.9rem; line-height: 1.5; }
+        .disc-traits { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .disc-trait { padding: 6px 12px; background: rgba(255, 255, 255, 0.1); border-radius: 20px; font-size: 0.8rem; }
+        .it-skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .it-skill { padding: 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 12px; text-align: center; }
+        .it-skill:hover { transform: translateY(-2px); border-color: var(--accent); }
+        .it-skill-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .it-skill-name { font-weight: 600; font-size: 0.9rem; color: var(--white); }
+        .it-skill-level { font-size: 0.8rem; color: var(--gray); }
+        .it-skill-bar { height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+        .it-skill-fill { height: 100%; border-radius: 3px; }
+        .career-card { display: flex; gap: 20px; padding: 24px; background: rgba(0, 212, 170, 0.1); border: 1px solid var(--accent); border-radius: 16px; }
+        .career-icon { font-size: 3rem; }
+        .career-info h3 { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; margin-bottom: 8px; color: var(--white); }
+        .career-info p { color: var(--gray); margin-bottom: 12px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9998; justify-content: center; align-items: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--accent); border-radius: 20px; padding: 32px; max-width: 500px; width: 90%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--white); }
+        .modal-close { background: none; border: none; color: var(--gray); font-size: 1.5rem; cursor: pointer; }
+        .modal-body { color: var(--gray); line-height: 1.6; }
+        .modal-body strong { color: var(--accent); }
+        .pdf-btn { background: var(--accent-purple); color: white; margin-left: 12px; }
+        .talent-content { display: none; }
+        .talent-content.visible { display: block !important; }
+        .disc-bars { display: flex; flex-direction: column; gap: 12px; }
+        .disc-row { display: flex; align-items: center; gap: 12px; }
+        .disc-label { width: 24px; font-weight: 700; font-size: 1rem; color: var(--white); }
+        .disc-track { flex: 1; height: 24px; background: rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden; }
+        .disc-fill { height: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-weight: 700; font-size: 0.8rem; color: #000; }
+        .disc-d { background: linear-gradient(90deg, #ef4444, #f87171); }
+        .disc-i { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .disc-s { background: linear-gradient(90deg, #22c55e, #4ade80); }
+        .disc-c { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .career-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .career-tag { padding: 8px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 20px; font-size: 0.85rem; }
+        @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } .disc-section { grid-template-columns: 1fr; } .competencies-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 700px) { .dashboard-grid { grid-template-columns: 1fr; } .competencies-grid { grid-template-columns: repeat(2, 1fr); } .it-skills-grid { grid-template-columns: repeat(2, 1fr); } .header { flex-direction: column; } .nav { justify-content: center; } }
+        @media print { @page { size: A4 portrait; margin: 10mm; } body { background: white !important; color: #000 !important; } .header { display: none; } .card { border: 1px solid #ccc; background: #f8f9fa !important; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🧬</div>
+            <div><div class="logo-text">BioCrafters 2026</div><span class="logo-sub">ONE! International School</span></div>
+        </div>
+        <nav class="nav">
+            <button class="nav-btn active" onclick="showPage('participants')">👥 Участники</button>
+            <button class="nav-btn" onclick="showPage('tasks')">🎯 Задания</button>
+            <button class="nav-btn" onclick="showPage('achievements')">🏆 Достижения</button>
+            <button class="nav-btn" onclick="showPage('talents')">🧬 Карта талантов</button>
+            <button class="nav-btn" onclick="showPage('dashboard')">📊 Дашборд отряда</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="page active" id="page-participants">
+            <h1>👥 Участники</h1>
+            <p class="text-muted">Добавьте участников лагеря и отслеживайте их прогресс</p>
+            <div class="card">
+                <h2 style="font-family:Montserrat;font-size:1.2rem;margin-bottom:16px">➕ Добавить участника</h2>
+                <div class="form-row">
+                    <div class="form-group"><label>Имя участника</label><input type="text" id="participant-name" class="form-control" placeholder="Иван Иванов"></div>
+                    <div class="form-group"><label>Возраст</label><input type="number" id="participant-age" class="form-control" placeholder="10" min="6" max="16"></div>
+                    <div class="form-group"><label>Класс</label><select id="participant-grade" class="form-control"><option value="">Выбрать...</option><option value="1 класс">1 класс</option><option value="2 класс">2 класс</option><option value="3 класс">3 класс</option><option value="4 класс">4 класс</option><option value="5 класс">5 класс</option><option value="6 класс">6 класс</option><option value="7 класс">7 класс</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Отряд</label><select id="participant-squad" class="form-control"><option value="">Выбрать...</option><option value="1 отряд">1 отряд</option><option value="2 отряд">2 отряд</option><option value="3 отряд">3 отряд</option><option value="4 отряд">4 отряд</option></select></div>
+                    <div class="form-group"><label>Смена</label><select id="participant-shift" class="form-control"><option value="">Выбрать...</option><option value="1 смена">1 смена</option><option value="2 смена">2 смена</option><option value="3 смена">3 смена</option><option value="4 смена">4 смена</option><option value="5 смена">5 смена</option><option value="6 смена">6 смена</option></select></div>
+                    <div class="form-group"><label>Особенности</label><input type="text" id="participant-notes" class="form-control" placeholder="Любит выступать..."></div>
+                </div>
+                <button class="btn" onclick="addParticipant()">➕ Добавить участника</button>
+            </div>
+            <div class="card">
+                <h2 style="font-family:Montserrat;font-size:1.2rem;margin-bottom:16px">📋 Список участников</h2>
+                <div class="search-box">
+                    <input type="text" id="search-name" class="form-control" placeholder="Поиск по имени..." oninput="filterParticipants()">
+                    <select id="search-squad" class="form-control" onchange="filterParticipants()"><option value="">Все отряды</option><option value="1 отряд">1 отряд</option><option value="2 отряд">2 отряд</option><option value="3 отряд">3 отряд</option><option value="4 отряд">4 отряд</option></select>
+                    <select id="search-shift" class="form-control" onchange="filterParticipants()"><option value="">Все смены</option><option value="1 смена">1 смена</option><option value="2 смена">2 смена</option><option value="3 смена">3 смена</option><option value="4 смена">4 смена</option><option value="5 смена">5 смена</option><option value="6 смена">6 смена</option></select>
+                </div>
+                <div class="student-grid" id="participants-grid"></div>
+            </div>
+        </div>
+
+        <div class="page" id="page-tasks">
+            <h1>🎯 Задания</h1>
+            <p class="text-muted">Отмечайте выполнение заданий и оценивайте участников</p>
+            <div class="card">
+                <h2 style="font-family:Montserrat;font-size:1.2rem;margin-bottom:16px">Выберите участника</h2>
+                <div class="search-box">
+                    <input type="text" id="task-search-name" class="form-control" placeholder="Поиск по имени..." oninput="updateTaskDropdown()">
+                    <select id="task-search-squad" class="form-control" onchange="updateTaskDropdown()"><option value="">Все отряды</option><option value="1 отряд">1 отряд</option><option value="2 отряд">2 отряд</option><option value="3 отряд">3 отряд</option><option value="4 отряд">4 отряд</option></select>
+                    <select id="task-search-shift" class="form-control" onchange="updateTaskDropdown()"><option value="">Все смены</option><option value="1 смена">1 смена</option><option value="2 смена">2 смена</option><option value="3 смена">3 смена</option><option value="4 смена">4 смена</option><option value="5 смена">5 смена</option><option value="6 смена">6 смена</option></select>
+                </div>
+                <select id="task-participant" class="form-control" onchange="loadTasks()"><option value="">Выбрать участника...</option></select>
+            </div>
+            <div id="tasks-container" style="display:none;">
+                <div class="profile-header">
+                    <div class="avatar-large" id="task-avatar">?</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="task-name">Участник</div>
+                        <div class="profile-badges"><span class="badge badge-age" id="task-age">10 лет</span><span class="badge badge-squad" id="task-squad">Отряд</span><span class="badge badge-shift" id="task-shift">Смена</span></div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-box"><div class="stat-num" id="progress-days">0</div><div class="stat-label">Дней</div></div>
+                        <div class="stat-box"><div class="stat-num" id="progress-badges">0</div><div class="stat-label">Нашивок</div></div>
+                        <div class="level-progress">
+                            <div class="level-badge-large" id="progress-level">1</div>
+                            <div class="xp-bar"><div class="xp-label"><span>Level <span id="progress-level-num">1</span></span><span><span id="progress-xp">0</span>/<span id="progress-xp-max">100</span> XP</span></div>
+                            <div class="xp-fill-container"><div class="xp-current" id="progress-xp-bar" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="tab-nav">
+                        <button class="tab-btn bio active" onclick="showTrack('bio')">🧬 BioTech</button>
+                        <button class="tab-btn eng" onclick="showTrack('eng')">⚙️ Engineering</button>
+                        <button class="tab-btn media" onclick="showTrack('media')">🎥 Media</button>
+                    </div>
+                    <div class="tab-content active" id="track-bio"><div class="task-list" id="bio-tasks"></div></div>
+                    <div class="tab-content" id="track-eng"><div class="task-list" id="eng-tasks"></div></div>
+                    <div class="tab-content" id="track-media"><div class="task-list" id="media-tasks"></div></div>
+                </div>
+            </div>
+            <div id="no-tasks" class="no-data"><div class="no-data-icon">🎯</div><p>Выберите участника для отслеживания заданий</p></div>
+        </div>
+
+        <div class="page" id="page-achievements">
+            <h1>🏆 Достижения</h1>
+            <p class="text-muted">Отслеживайте нашивки и достижения участников</p>
+            <div class="card">
+                <h2 style="font-family:Montserrat;font-size:1.2rem;margin-bottom:16px">Выберите участника</h2>
+                <div class="search-box">
+                    <input type="text" id="ach-search-name" class="form-control" placeholder="Поиск по имени..." oninput="updateAchDropdown()">
+                    <select id="ach-search-squad" class="form-control" onchange="updateAchDropdown()"><option value="">Все отряды</option><option value="1 отряд">1 отряд</option><option value="2 отряд">2 отряд</option><option value="3 отряд">3 отряд</option><option value="4 отряд">4 отряд</option></select>
+                    <select id="ach-search-shift" class="form-control" onchange="updateAchDropdown()"><option value="">Все смены</option><option value="1 смена">1 смена</option><option value="2 смена">2 смена</option><option value="3 смена">3 смена</option><option value="4 смена">4 смена</option><option value="5 смена">5 смена</option><option value="6 смена">6 смена</option></select>
+                </div>
+                <select id="ach-participant" class="form-control" onchange="loadAchievements()"><option value="">Выбрать участника...</option></select>
+            </div>
+            <div id="achievements-container" style="display:none;">
+                <div class="card"><div class="card-title">🎖️ Нашивки BioTech</div><div class="achievement-grid" id="bio-achievements"></div></div>
+                <div class="card"><div class="card-title">⚙️ Нашивки Engineering</div><div class="achievement-grid" id="eng-achievements"></div></div>
+                <div class="card"><div class="card-title">🎬 Нашивки Media</div><div class="achievement-grid" id="media-achievements"></div></div>
+            </div>
+            <div id="no-achievements" class="no-data"><div class="no-data-icon">🏆</div><p>Выберите участника для просмотра достижений</p></div>
+        </div>
+
+        <div class="page" id="page-talents">
+            <h1>🧬 Карта талантов 2026</h1>
+            <p class="text-muted">Персональная карточка участника с универсальными компетенциями</p>
+            <div class="card">
+                <h2 style="font-family:Montserrat;font-size:1.2rem;margin-bottom:16px">Выберите участника</h2>
+                <div class="search-box">
+                    <input type="text" id="tal-search-name" class="form-control" placeholder="Поиск по имени..." oninput="updateTalDropdown()">
+                    <select id="tal-search-squad" class="form-control" onchange="updateTalDropdown()"><option value="">Все отряды</option><option value="1 отряд">1 отряд</option><option value="2 отряд">2 отряд</option><option value="3 отряд">3 отряд</option><option value="4 отряд">4 отряд</option></select>
+                    <select id="tal-search-shift" class="form-control" onchange="updateTalDropdown()"><option value="">Все смены</option><option value="1 смена">1 смена</option><option value="2 смена">2 смена</option><option value="3 смена">3 смена</option><option value="4 смена">4 смена</option><option value="5 смена">5 смена</option><option value="6 смена">6 смена</option></select>
+                </div>
+                <select id="tal-participant" class="form-control" onchange="loadTalents()"><option value="">Выбрать участника...</option></select>
+            </div>
+            <div class="talent-content" id="talent-content">
+                <div class="profile-header">
+                    <div class="avatar-large" id="tal-avatar">?</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="tal-name">Участник</div>
+                        <div class="profile-badges" id="tal-badges"></div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-box"><div class="stat-num" id="tal-days">0</div><div class="stat-label">Дней</div></div>
+                        <div class="stat-box"><div class="stat-num" id="tal-tasks">0</div><div class="stat-label">Инициатив</div></div>
+                        <div class="stat-box"><div class="stat-num" id="tal-ach">0</div><div class="stat-label">Достижений</div></div>
+                    </div>
+                    <div class="level-progress">
+                        <div class="level-badge-large" id="tal-level">1</div>
+                        <div class="xp-bar"><div class="xp-label"><span>Level <span id="tal-level-num">1</span></span><span><span id="tal-xp">0</span>/<span id="tal-xp-max">100</span> XP</span></div>
+                        <div class="xp-fill-container"><div class="xp-current" id="tal-xp-bar" style="width:0%"></div></div>
+                    </div>
+                    <button class="btn btn-purple" onclick="saveToPDF()">📄 PDF</button>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="card" style="grid-column:span 2">
+                        <div class="card-title">🎯 Радар 12 универсальных компетенций</div>
+                        <div class="radar-container"><canvas id="radarChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🏆 Профиль DISC</div>
+                        <div class="disc-section">
+                            <div style="max-width:200px;margin:0 auto"><canvas id="discChart"></canvas></div>
+                            <div class="disc-bars">
+                                <div class="disc-type-card"><div class="disc-type-name" id="disc-type-name">SI</div><div class="disc-type-desc" id="disc-type-desc"></div><div class="disc-traits" id="disc-traits"></div></div>
+                                <div class="disc-row"><span class="disc-label" style="color:#ef4444">D</span><div class="disc-track"><div class="disc-fill disc-d" id="disc-d" style="width:50%">50%</div></div></div>
+                                <div class="disc-row"><span class="disc-label" style="color:#f59e0b">I</span><div class="disc-track"><div class="disc-fill disc-i" id="disc-i" style="width:50%">50%</div></div></div>
+                                <div class="disc-row"><span class="disc-label" style="color:#22c55e">S</span><div class="disc-track"><div class="disc-fill disc-s" id="disc-s" style="width:50%">50%</div></div></div>
+                                <div class="disc-row"><span class="disc-label" style="color:#3b82f6">C</span><div class="disc-track"><div class="disc-fill disc-c" id="disc-c" style="width:50%">50%</div></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="grid-column:span 3">
+                        <div class="card-title">⭐ 12 универсальных компетенций</div>
+                        <div class="competencies-grid" id="competencies"></div>
+                    </div>
+                    <div class="card" style="grid-column:span 2">
+                        <div class="card-title">🚀 Проекты</div>
+                        <div class="projects-list" id="projects"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">💻 IT-навыки</div>
+                        <div class="it-skills-grid" id="it-skills"></div>
+                    </div>
+                    <div class="card" style="grid-column:span 3">
+                        <div class="card-title">🎓 Карьерный маршрут</div>
+                        <div class="career-card" id="career"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-dashboard">
+            <h1>📊 Дашборд отряда</h1>
+            <p class="text-muted">Общая статистика участников смены</p>
+            <div class="card">
+                <div class="search-box">
+                    <select id="dash-search-squad" class="form-control" onchange="renderDashboard()"><option value="">Все отряды</option><option value="1 отряд">1 отряд</option><option value="2 отряд">2 отряд</option><option value="3 отряд">3 отряд</option><option value="4 отряд">4 отряд</option></select>
+                    <select id="dash-search-shift" class="form-control" onchange="renderDashboard()"><option value="">Все смены</option><option value="1 смена">1 смена</option><option value="2 смена">2 смена</option><option value="3 смена">3 смена</option><option value="4 смена">4 смена</option><option value="5 смена">5 смена</option><option value="6 смена">6 смена</option></select>
+                </div>
+                <div class="stats-grid" style="margin-top:16px">
+                    <div class="stat-card"><div class="stat-num" id="total-participants">0</div><div class="stat-label">Участников</div></div>
+                    <div class="stat-card"><div class="stat-num" id="total-tasks">0</div><div class="stat-label">Выполнено заданий</div></div>
+                    <div class="stat-card"><div class="stat-num" id="total-badges">0</div><div class="stat-label">Нашивок</div></div>
+                    <div class="stat-card"><div class="stat-num" id="avg-score">0</div><div class="stat-label">Средний балл</div></div>
+                </div>
+            </div>
+            <div class="card"><h2 style="font-family:Montserrat;font-size:1.2rem;margin-bottom:16px">Прогресс участников</h2><div class="student-grid" id="dashboard-grid"></div></div>
+        </div>
+    </div>
+
+    <div class="modal" id="comp-modal">
+        <div class="modal-content">
+            <div class="modal-header"><div class="modal-title" id="modal-title">Компетенция</div><button class="modal-close" onclick="closeModal()">&times;</button></div>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+    <div class="toast" id="toast">Сохранено!</div>
+
+    <script>
+        var participants = [];
+        var tasks = [];
+        var achievements = [];
+        var selectedParticipant = null;
+        var radarChart = null;
+        var discChart = null;
+
+        var COMPETENCIES = [
+            {id:'critical',name:'Критическое мышление',icon:'🧠',desc:'Анализ информации и обоснованные выводы',track:'all'},
+            {id:'creativity',name:'Креативность',icon:'💡',desc:'Генерация новых идей и решений',track:'media'},
+            {id:'collab',name:'Командная работа',icon:'🤝',desc:'Эффективное взаимодействие',track:'all'},
+            {id:'comm',name:'Коммуникация',icon:'💬',desc:'Ясное выражение мыслей',track:'media'},
+            {id:'problem',name:'Решение проблем',icon:'🛠️',desc:'Эффективные решения задач',track:'eng'},
+            {id:'adapt',name:'Адаптивность',icon:'🔄',desc:'Гибкость к изменениям',track:'all'},
+            {id:'leadership',name:'Лидерство',icon:'⭐',desc:'Вести за собой',track:'all'},
+            {id:'tech',name:'Техн. грамотность',icon:'⚙️',desc:'Работа с технологиями',track:'eng'},
+            {id:'science',name:'Научное мышление',icon:'🔬',desc:'Методологический подход',track:'bio'},
+            {id:'time',name:'Тайм-менеджмент',icon:'⏰',desc:'Планирование времени',track:'all'},
+            {id:'empathy',name:'Эмпатия',icon:'❤️',desc:'Понимание других',track:'all'},
+            {id:'resil',name:'Устойчивость',icon:'💪',desc:'Преодоление трудностей',track:'all'}
+        ];
+
+        var PROJECTS = [
+            {id:'hydro',name:'Гидропонная ферма',desc:'Выращивание без почвы',track:'bio',icon:'🌱'},
+            {id:'smartfarm',name:'Умная ферма',desc:'Автополив и освещение',track:'eng',icon:'🤖'},
+            {id:'docu',name:'Документальный ролик',desc:'Видео о жизни лагеря',track:'media',icon:'🎬'},
+            {id:'ecoquest',name:'Эко-квест',desc:'Игра по станциям',track:'all',icon:'🎯'},
+            {id:'robotarm',name:'Робо-рука',desc:'Мех. рука на сервоприводах',track:'eng',icon:'🦾'},
+            {id:'microfilm',name:'Микрофильм',desc:'Съёмка короткометражки',track:'media',icon:'🎥'}
+        ];
+
+        var IT_SKILLS = [
+            {id:'microbit',name:'Micro:bit',icon:'📟'},
+            {id:'scratch',name:'Scratch',icon:'🧩'},
+            {id:'python',name:'Python',icon:'🐍'},
+            {id:'video',name:'Видеомонтаж',icon:'🎞️'},
+            {id:'photo',name:'Фотография',icon:'📷'},
+            {id:'docs',name:'Документы',icon:'📄'}
+        ];
+
+        var DISC_TYPES = {
+            'D':{name:'Доминирование',desc:'Энергичный, решительный, ориентированный на результат',traits:['Лидер','Конкурент','Амбициозный']},
+            'I':{name:'Влияние',desc:'Общительный, оптимистичный, креативный',traits:['Общительный','Вдохновитель','Энтузиаст']},
+            'S':{name:'Стабильность',desc:'Надёжный, терпеливый, командный игрок',traits:['Преданный','Терпеливый','Практичный']},
+            'C':{name:'Добросовестность',desc:'Аналитичный, точный, систематичный',traits:['Аналитик','Перфекционист','Организованный']},
+            'DI':{name:'Вдохновитель-Лидер',desc:'Харизматичный лидер, решительность + креативность',traits:['Харизматичный','Стратег','Новатор']},
+            'ID':{name:'Энтузиаст-Новатор',desc:'Творческий и энергичный, идеи и энтузиазм',traits:['Креативный','Энергичный','Оптимистичный']},
+            'IS':{name:'Помощник-Энтузиаст',desc:'Тёплый, заботливый, позитивная атмосфера',traits:['Эмпатичный','Поддерживающий','Гармоничный']},
+            'SI':{name:'Надёжный-Поддерживающий',desc:'Стабильный, преданный, создаёт доверие',traits:['Лояльный','Стабильный','Ответственный']},
+            'IC':{name:'Эксперт-Консультант',desc:'Аналитик с коммуникативными навыками',traits:['Эксперт','Педагог','Точный']},
+            'CI':{name:'Специалист-Инноватор',desc:'Технический эксперт с творческим подходом',traits:['Исследователь','Новатор','Изобретатель']},
+            'SC':{name:'Мастер-Реализатор',desc:'Практик с вниманием к деталям',traits:['Мастер','Практик','Качественник']},
+            'CS':{name:'Аналитик-Координатор',desc:'Системный мыслитель, организует процессы',traits:['Организатор','Планировщик','Координатор']}
+        };
+
+        var BIO_TASKS = [
+            {day:1,title:'Анализ субстратов',desc:'Агровата, кокос, гидрогель'},
+            {day:2,title:'Посадка семян',desc:'Редис и кресс-салат'},
+            {day:3,title:'Крафт фильтра',desc:'Многоуровневый фильтр'},
+            {day:4,title:'Дыхание растений',desc:'Наблюдение пузырьков'},
+            {day:5,title:'Враждебные мобы',desc:'Микроскоп: корешки vs плесень'},
+            {day:6,title:'Зелёная химия',desc:'pH-индикатор'},
+            {day:7,title:'Сбор статистики',desc:'Измерение роста'},
+            {day:8,title:'Лутаем еду!',desc:'Срезание микрозелени'},
+            {day:9,title:'Оптимизация',desc:'Анализ данных'},
+            {day:10,title:'Финальный сбор',desc:'Торжественный сбор'}
+        ];
+        var ENG_TASKS = [
+            {day:1,title:'Основы Редстоуна',desc:'Сборка цепи'},
+            {day:2,title:'Ветряк',desc:'Моторчик + лопасти'},
+            {day:3,title:'Умный полив',desc:'Датчик влажности'},
+            {day:4,title:'Солнечная панель',desc:'Вентилятор от света'},
+            {day:5,title:'Термо-щит',desc:'Датчик температуры'},
+            {day:6,title:'Авто-Свет',desc:'Фоторезистор'},
+            {day:7,title:'Анти-Грифер',desc:'Геркон'},
+            {day:8,title:'Коннект',desc:'Подключение'},
+            {day:9,title:'Оптимизация',desc:'Подсчёт энергии'},
+            {day:10,title:'Рум-тур',desc:'Экскурсия'}
+        ];
+        var MEDIA_TASKS = [
+            {day:1,title:'Хук Мистера Биста',desc:'Видеодневник'},
+            {day:2,title:'B-roll',desc:'Макросъёмка'},
+            {day:3,title:'Научпоп',desc:'Обзор'},
+            {day:4,title:'Stop-Motion',desc:'Анимация'},
+            {day:5,title:'Эко-Челлендж',desc:'Shorts'},
+            {day:6,title:'Рум-тур',desc:'Обзор'},
+            {day:7,title:'Новости',desc:'Сценка'},
+            {day:8,title:'Премьера',desc:'3-мин ролик'},
+            {day:9,title:'Бэкстейдж',desc:'Интервью'},
+            {day:10,title:'Аналитика',desc:'Метрики'}
+        ];
+        var ACHIEVEMENTS = {
+            bio:[{id:'agro',name:'Агроном',icon:'🌱',day:5},{id:'him',name:'Зелёная химия',icon:'🧪',day:6},{id:'urado',name:'Мастер Урожая',icon:'🥗',day:8}],
+            eng:[{id:'redstone',name:'Мастер Редстоуна',icon:'⚡',day:1},{id:'energy',name:'Энергия',icon:'🔋',day:4},{id:'code',name:'Код-архитектор',icon:'💻',day:6}],
+            media:[{id:'voice',name:'Голос Базы',icon:'🎤',day:2},{id:'montazh',name:'Режиссёр монтажа',icon:'🎬',day:4},{id:'star',name:'Звезда YouTube',icon:'⭐',day:10}]
+        };
+
+        function init() {
+            var storedParticipants = localStorage.getItem('biocrafters_participants');
+            var storedTasks = localStorage.getItem('biocrafters_tasks');
+            var storedAchievements = localStorage.getItem('biocrafters_achievements');
+            
+            if (storedParticipants) {
+                try {
+                    participants = JSON.parse(storedParticipants);
+                } catch(e) {
+                    participants = [];
+                }
+            }
+            if (storedTasks) {
+                try {
+                    tasks = JSON.parse(storedTasks);
+                } catch(e) {
+                    tasks = [];
+                }
+            }
+            if (storedAchievements) {
+                try {
+                    achievements = JSON.parse(storedAchievements);
+                } catch(e) {
+                    achievements = [];
+                }
+            }
+            
+            if (participants.length === 0) {
+                participants = [];
+                tasks = [];
+                achievements = [];
+                saveData();
+            }
+            renderParticipants();
+            updateAllDropdowns();
+            renderDashboard();
+        }
+
+        function saveData() {
+            localStorage.setItem('biocrafters_participants', JSON.stringify(participants));
+            localStorage.setItem('biocrafters_tasks', JSON.stringify(tasks));
+            localStorage.setItem('biocrafters_achievements', JSON.stringify(achievements));
+        }
+
+        function showPage(page) {
+            var pages = document.querySelectorAll('.page');
+            for (var i = 0; i < pages.length; i++) {
+                pages[i].classList.remove('active');
+            }
+            var buttons = document.querySelectorAll('.nav-btn');
+            for (var j = 0; j < buttons.length; j++) {
+                buttons[j].classList.remove('active');
+            }
+            var targetPage = document.getElementById('page-' + page);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            var pageMap = {participants:0, tasks:1, achievements:2, talents:3, dashboard:4};
+            if (pageMap[page] !== undefined && buttons[pageMap[page]]) {
+                buttons[pageMap[page]].classList.add('active');
+            }
+            if (page === 'tasks' || page === 'achievements' || page === 'talents') {
+                updateAllDropdowns();
+            }
+            if (page === 'dashboard') {
+                renderDashboard();
+            }
+        }
+
+        function addParticipant() {
+            var name = document.getElementById('participant-name').value.trim();
+            var ageInput = document.getElementById('participant-age').value;
+            var age = parseInt(ageInput);
+            
+            if (!name) {
+                showToast('Введите имя участника!');
+                return;
+            }
+            if (!ageInput || isNaN(age)) {
+                showToast('Введите возраст участника!');
+                return;
+            }
+            
+            var newParticipant = {
+                id: Date.now(),
+                name: name,
+                age: age,
+                grade: document.getElementById('participant-grade').value,
+                squad: document.getElementById('participant-squad').value,
+                shift: document.getElementById('participant-shift').value,
+                notes: document.getElementById('participant-notes').value,
+                level: 1,
+                xp: 0
+            };
+            
+            participants.push(newParticipant);
+            saveData();
+            
+            document.getElementById('participant-name').value = '';
+            document.getElementById('participant-age').value = '';
+            document.getElementById('participant-grade').value = '';
+            document.getElementById('participant-squad').value = '';
+            document.getElementById('participant-shift').value = '';
+            document.getElementById('participant-notes').value = '';
+            
+            renderParticipants();
+            updateAllDropdowns();
+            showToast('Участник добавлен!');
+        }
+
+        function filterParticipants() {
+            var nameFilter = document.getElementById('search-name').value.toLowerCase();
+            var squadFilter = document.getElementById('search-squad').value;
+            var shiftFilter = document.getElementById('search-shift').value;
+            
+            var filtered = [];
+            for (var i = 0; i < participants.length; i++) {
+                var p = participants[i];
+                var matchName = !nameFilter || p.name.toLowerCase().indexOf(nameFilter) !== -1;
+                var matchSquad = !squadFilter || p.squad === squadFilter;
+                var matchShift = !shiftFilter || p.shift === shiftFilter;
+                if (matchName && matchSquad && matchShift) {
+                    filtered.push(p);
+                }
+            }
+            renderParticipantsList(filtered);
+        }
+
+        function renderParticipants() {
+            renderParticipantsList(participants);
+        }
+
+        function renderParticipantsList(list) {
+            var grid = document.getElementById('participants-grid');
+            if (!grid) return;
+            
+            if (list.length === 0) {
+                grid.innerHTML = '<div class="no-data"><div class="no-data-icon">🔍</div><p>Ничего не найдено</p></div>';
+                return;
+            }
+            
+            var html = '';
+            for (var i = 0; i < list.length; i++) {
+                var p = list[i];
+                var pTasks = [];
+                for (var j = 0; j < tasks.length; j++) {
+                    if (tasks[j].participantId === p.id) {
+                        pTasks.push(tasks[j]);
+                    }
+                }
+                var xpNeeded = p.level * 100;
+                var bioCount = 0, engCount = 0, mediaCount = 0;
+                for (var k = 0; k < pTasks.length; k++) {
+                    if (pTasks[k].track === 'bio') bioCount++;
+                    else if (pTasks[k].track === 'eng') engCount++;
+                    else if (pTasks[k].track === 'media') mediaCount++;
+                }
+                
+                html += '<div class="student-card" onclick="selectParticipant(' + p.id + ', this)">' +
+                    '<div class="student-avatar">' + p.name.charAt(0) + '</div>' +
+                    '<div class="student-name">' + p.name + '</div>' +
+                    '<div class="student-info">' + p.age + ' лет · ' + (p.squad || 'Без отряда') + '</div>' +
+                    '<div class="student-badges">' +
+                    '<span class="badge badge-bio">🧬 ' + bioCount + '</span>' +
+                    '<span class="badge badge-eng">⚙️ ' + engCount + '</span>' +
+                    '<span class="badge badge-media">🎬 ' + mediaCount + '</span>' +
+                    '</div>' +
+                    '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.min((p.xp / xpNeeded * 100), 100) + '%"></div></div>' +
+                    '</div>';
+            }
+            grid.innerHTML = html;
+        }
+
+        function selectParticipant(id, el) {
+            for (var i = 0; i < participants.length; i++) {
+                if (participants[i].id === id) {
+                    selectedParticipant = participants[i];
+                    break;
+                }
+            }
+            var cards = document.querySelectorAll('.student-card');
+            for (var j = 0; j < cards.length; j++) {
+                cards[j].classList.remove('selected');
+            }
+            if (el) {
+                el.classList.add('selected');
+            }
+        }
+
+        function updateAllDropdowns() {
+            updateTaskDropdown();
+            updateAchDropdown();
+            updateTalDropdown();
+        }
+
+        function updateTaskDropdown() {
+            var nameFilter = document.getElementById('task-search-name').value.toLowerCase();
+            var squadFilter = document.getElementById('task-search-squad').value;
+            var shiftFilter = document.getElementById('task-search-shift').value;
+            
+            var filtered = [];
+            for (var i = 0; i < participants.length; i++) {
+                var p = participants[i];
+                var matchName = !nameFilter || p.name.toLowerCase().indexOf(nameFilter) !== -1;
+                var matchSquad = !squadFilter || p.squad === squadFilter;
+                var matchShift = !shiftFilter || p.shift === shiftFilter;
+                if (matchName && matchSquad && matchShift) {
+                    filtered.push(p);
+                }
+            }
+            
+            var select = document.getElementById('task-participant');
+            var html = '<option value="">Выбрать участника...</option>';
+            for (var j = 0; j < filtered.length; j++) {
+                var p = filtered[j];
+                html += '<option value="' + p.id + '">' + p.name + ' (' + (p.squad || 'Без отряда') + ')</option>';
+            }
+            select.innerHTML = html;
+        }
+
+        function updateAchDropdown() {
+            var nameFilter = document.getElementById('ach-search-name').value.toLowerCase();
+            var squadFilter = document.getElementById('ach-search-squad').value;
+            var shiftFilter = document.getElementById('ach-search-shift').value;
+            
+            var filtered = [];
+            for (var i = 0; i < participants.length; i++) {
+                var p = participants[i];
+                var matchName = !nameFilter || p.name.toLowerCase().indexOf(nameFilter) !== -1;
+                var matchSquad = !squadFilter || p.squad === squadFilter;
+                var matchShift = !shiftFilter || p.shift === shiftFilter;
+                if (matchName && matchSquad && matchShift) {
+                    filtered.push(p);
+                }
+            }
+            
+            var select = document.getElementById('ach-participant');
+            var html = '<option value="">Выбрать участника...</option>';
+            for (var j = 0; j < filtered.length; j++) {
+                var p = filtered[j];
+                html += '<option value="' + p.id + '">' + p.name + ' (' + (p.squad || 'Без отряда') + ')</option>';
+            }
+            select.innerHTML = html;
+        }
+
+        function updateTalDropdown() {
+            var nameFilter = document.getElementById('tal-search-name').value.toLowerCase();
+            var squadFilter = document.getElementById('tal-search-squad').value;
+            var shiftFilter = document.getElementById('tal-search-shift').value;
+            
+            var filtered = [];
+            for (var i = 0; i < participants.length; i++) {
+                var p = participants[i];
+                var matchName = !nameFilter || p.name.toLowerCase().indexOf(nameFilter) !== -1;
+                var matchSquad = !squadFilter || p.squad === squadFilter;
+                var matchShift = !shiftFilter || p.shift === shiftFilter;
+                if (matchName && matchSquad && matchShift) {
+                    filtered.push(p);
+                }
+            }
+            
+            var select = document.getElementById('tal-participant');
+            var html = '<option value="">Выбрать участника...</option>';
+            for (var j = 0; j < filtered.length; j++) {
+                var p = filtered[j];
+                html += '<option value="' + p.id + '">' + p.name + ' (' + (p.squad || 'Без отряда') + ')</option>';
+            }
+            select.innerHTML = html;
+        }
+
+        function loadTasks() {
+            var participantId = parseInt(document.getElementById('task-participant').value);
+            var tasksContainer = document.getElementById('tasks-container');
+            var noTasks = document.getElementById('no-tasks');
+            
+            if (!participantId || isNaN(participantId)) {
+                tasksContainer.style.display = 'none';
+                noTasks.style.display = 'block';
+                return;
+            }
+            
+            for (var i = 0; i < participants.length; i++) {
+                if (participants[i].id === participantId) {
+                    selectedParticipant = participants[i];
+                    break;
+                }
+            }
+            
+            if (!selectedParticipant) {
+                tasksContainer.style.display = 'none';
+                noTasks.style.display = 'block';
+                return;
+            }
+            
+            tasksContainer.style.display = 'block';
+            noTasks.style.display = 'none';
+            
+            document.getElementById('task-avatar').textContent = selectedParticipant.name.charAt(0);
+            document.getElementById('task-name').textContent = selectedParticipant.name;
+            document.getElementById('task-age').textContent = selectedParticipant.age + ' лет';
+            document.getElementById('task-squad').textContent = selectedParticipant.squad || 'Отряд';
+            document.getElementById('task-shift').textContent = selectedParticipant.shift || 'Смена';
+            
+            renderTaskTrack('bio', BIO_TASKS);
+            renderTaskTrack('eng', ENG_TASKS);
+            renderTaskTrack('media', MEDIA_TASKS);
+            updateProgress();
+        }
+
+        function renderTaskTrack(track, taskList) {
+            var container = document.getElementById(track + '-tasks');
+            var pTasks = [];
+            for (var i = 0; i < tasks.length; i++) {
+                if (tasks[i].participantId === selectedParticipant.id && tasks[i].track === track) {
+                    pTasks.push(tasks[i]);
+                }
+            }
+            
+            var html = '';
+            for (var j = 0; j < taskList.length; j++) {
+                var task = taskList[j];
+                var completed = null;
+                for (var k = 0; k < pTasks.length; k++) {
+                    if (pTasks[k].day === task.day) {
+                        completed = pTasks[k];
+                        break;
+                    }
+                }
+                var score = completed ? completed.score : 0;
+                var init = completed ? completed.initiative : false;
+                
+                html += '<div class="task-day ' + (completed ? 'completed' : '') + '">' +
+                    '<div class="task-number">Д' + task.day + '</div>' +
+                    '<div class="task-content">' +
+                    '<div class="task-title">' + task.title + '</div>' +
+                    '<div class="task-desc">' + task.desc + '</div>' +
+                    '</div>' +
+                    '<div class="task-rating">' +
+                    '<select class="form-control" style="width:70px;padding:8px" onchange="saveTask(\'' + track + '\',' + task.day + ',this.value)">' +
+                    '<option value="">-</option>' +
+                    '<option value="5"' + (score === 5 ? ' selected' : '') + '>5★</option>' +
+                    '<option value="4"' + (score === 4 ? ' selected' : '') + '>4★</option>' +
+                    '<option value="3"' + (score === 3 ? ' selected' : '') + '>3★</option>' +
+                    '</select>' +
+                    '<div class="checkbox ' + (init ? 'checked' : '') + '" onclick="toggleInitiative(\'' + track + '\',' + task.day + ',this)">⭐</div>' +
+                    '</div></div>';
+            }
+            container.innerHTML = html;
+        }
+
+        function saveTask(track, day, score) {
+            if (!selectedParticipant || !score) return;
+            
+            var existingTask = null;
+            for (var i = 0; i < tasks.length; i++) {
+                if (tasks[i].participantId === selectedParticipant.id && tasks[i].track === track && tasks[i].day === day) {
+                    existingTask = tasks[i];
+                    break;
+                }
+            }
+            
+            if (existingTask) {
+                existingTask.score = parseInt(score);
+            } else {
+                tasks.push({
+                    id: Date.now(),
+                    participantId: selectedParticipant.id,
+                    track: track,
+                    day: day,
+                    score: parseInt(score),
+                    initiative: false
+                });
+                selectedParticipant.xp += parseInt(score) * 10;
+                checkLevelUp();
+                checkAchievements(track);
+            }
+            saveData();
+            updateProgress();
+            showToast('Сохранено!');
+        }
+
+        function toggleInitiative(track, day, el) {
+            if (!selectedParticipant) return;
+            
+            for (var i = 0; i < tasks.length; i++) {
+                if (tasks[i].participantId === selectedParticipant.id && tasks[i].track === track && tasks[i].day === day) {
+                    tasks[i].initiative = !tasks[i].initiative;
+                    el.classList.toggle('checked');
+                    checkAchievements(track);
+                    saveData();
+                    updateProgress();
+                    break;
+                }
+            }
+        }
+
+        function checkLevelUp() {
+            var xpNeeded = selectedParticipant.level * 100;
+            if (selectedParticipant.xp >= xpNeeded) {
+                selectedParticipant.level++;
+                selectedParticipant.xp -= xpNeeded;
+            }
+        }
+
+        function checkAchievements(track) {
+            var pTasks = [];
+            for (var i = 0; i < tasks.length; i++) {
+                if (tasks[i].participantId === selectedParticipant.id && tasks[i].track === track) {
+                    pTasks.push(tasks[i]);
+                }
+            }
+            
+            var completedDays = pTasks.map(function(t){return t.day}).sort();
+            
+            var trackAchs = ACHIEVEMENTS[track] || [];
+            for (var j = 0; j < trackAchs.length; j++) {
+                var ach = trackAchs[j];
+                var hasAch = false;
+                for (var k = 0; k < achievements.length; k++) {
+                    if (achievements[k].participantId === selectedParticipant.id && achievements[k].achId === ach.id) {
+                        hasAch = true;
+                        break;
+                    }
+                }
+                if (!hasAch && completedDays.length >= ach.day) {
+                    achievements.push({
+                        participantId: selectedParticipant.id,
+                        achId: ach.id,
+                        track: track
+                    });
+                }
+            }
+        }
+
+        function updateProgress() {
+            var pTasks = [];
+            for (var i = 0; i < tasks.length; i++) {
+                if (tasks[i].participantId === selectedParticipant.id) {
+                    pTasks.push(tasks[i]);
+                }
+            }
+            
+            var pBadges = 0;
+            for (var j = 0; j < pTasks.length; j++) {
+                if (pTasks[j].initiative) pBadges++;
+            }
+            
+            var xpNeeded = selectedParticipant.level * 100;
+            document.getElementById('progress-days').textContent = pTasks.length;
+            document.getElementById('progress-badges').textContent = pBadges;
+            document.getElementById('progress-level').textContent = selectedParticipant.level;
+            document.getElementById('progress-level-num').textContent = selectedParticipant.level;
+            document.getElementById('progress-xp').textContent = selectedParticipant.xp;
+            document.getElementById('progress-xp-max').textContent = xpNeeded;
+            document.getElementById('progress-xp-bar').style.width = Math.min((selectedParticipant.xp / xpNeeded * 100), 100) + '%';
+        }
+
+        function showTrack(track) {
+            var buttons = document.querySelectorAll('.tab-btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+            var targetBtn = document.querySelector('.tab-btn.' + track);
+            if (targetBtn) targetBtn.classList.add('active');
+            
+            var contents = document.querySelectorAll('.tab-content');
+            for (var j = 0; j < contents.length; j++) {
+                contents[j].classList.remove('active');
+            }
+            var targetContent = document.getElementById('track-' + track);
+            if (targetContent) targetContent.classList.add('active');
+        }
+
+        function loadAchievements() {
+            var participantId = parseInt(document.getElementById('ach-participant').value);
+            var container = document.getElementById('achievements-container');
+            var noAch = document.getElementById('no-achievements');
+            
+            if (!participantId || isNaN(participantId)) {
+                container.style.display = 'none';
+                if (noAch) noAch.style.display = 'block';
+                return;
+            }
+            
+            for (var i = 0; i < participants.length; i++) {
+                if (participants[i].id === participantId) {
+                    selectedParticipant = participants[i];
+                    break;
+                }
+            }
+            
+            if (!selectedParticipant) {
+                container.style.display = 'none';
+                if (noAch) noAch.style.display = 'block';
+                return;
+            }
+            
+            checkAllAchievements();
+            saveData();
+            
+            container.style.display = 'block';
+            if (noAch) noAch.style.display = 'none';
+            
+            renderAchievements('bio');
+            renderAchievements('eng');
+            renderAchievements('media');
+        }
+
+        function checkAllAchievements() {
+            var tracks = ['bio', 'eng', 'media'];
+            for (var t = 0; t < tracks.length; t++) {
+                var track = tracks[t];
+                var pTasks = [];
+                for (var i = 0; i < tasks.length; i++) {
+                    if (tasks[i].participantId === selectedParticipant.id && tasks[i].track === track) {
+                        pTasks.push(tasks[i]);
+                    }
+                }
+                
+                var completedDays = pTasks.map(function(task){return task.day}).sort();
+                var trackAchs = ACHIEVEMENTS[track] || [];
+                
+                for (var j = 0; j < trackAchs.length; j++) {
+                    var ach = trackAchs[j];
+                    var hasAch = false;
+                    for (var k = 0; k < achievements.length; k++) {
+                        if (achievements[k].participantId === selectedParticipant.id && achievements[k].achId === ach.id) {
+                            hasAch = true;
+                            break;
+                        }
+                    }
+                    if (!hasAch && completedDays.length >= ach.day) {
+                        achievements.push({
+                            participantId: selectedParticipant.id,
+                            achId: ach.id,
+                            track: track
+                        });
+                    }
+                }
+            }
+        }
+
+        function renderAchievements(track) {
+            var container = document.getElementById(track + '-achievements');
+            var pAch = [];
+            for (var i = 0; i < achievements.length; i++) {
+                if (achievements[i].participantId === selectedParticipant.id && achievements[i].track === track) {
+                    pAch.push(achievements[i]);
+                }
+            }
+            
+            var html = '';
+            for (var j = 0; j < ACHIEVEMENTS[track].length; j++) {
+                var ach = ACHIEVEMENTS[track][j];
+                var earned = false;
+                for (var k = 0; k < pAch.length; k++) {
+                    if (pAch[k].achId === ach.id) {
+                        earned = true;
+                        break;
+                    }
+                }
+                html += '<div class="achievement ' + (earned ? 'earned' : '') + '">' +
+                    '<div class="achievement-icon">' + ach.icon + '</div>' +
+                    '<div class="achievement-name">' + ach.name + '</div>' +
+                    '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        function loadTalents() {
+            var participantId = parseInt(document.getElementById('tal-participant').value);
+            var talentContent = document.getElementById('talent-content');
+            
+            if (!participantId || isNaN(participantId)) {
+                talentContent.classList.remove('visible');
+                return;
+            }
+            
+            for (var i = 0; i < participants.length; i++) {
+                if (participants[i].id === participantId) {
+                    selectedParticipant = participants[i];
+                    break;
+                }
+            }
+            
+            if (!selectedParticipant) {
+                talentContent.classList.remove('visible');
+                return;
+            }
+            
+            var p = selectedParticipant;
+            talentContent.classList.add('visible');
+            
+            checkAllAchievements();
+            
+            document.getElementById('tal-avatar').textContent = p.name.charAt(0);
+            document.getElementById('tal-name').textContent = p.name;
+            document.getElementById('tal-badges').innerHTML = 
+                '<span class="badge badge-age">' + p.age + ' лет</span>' +
+                '<span class="badge badge-squad">' + (p.squad || 'Отряд') + '</span>' +
+                '<span class="badge badge-shift">' + (p.shift || 'Смена') + '</span>' +
+                '<span class="badge badge-dept">BioCrafters 2026</span>';
+            
+            var pTasks = [];
+            for (var j = 0; j < tasks.length; j++) {
+                if (tasks[j].participantId === p.id) {
+                    pTasks.push(tasks[j]);
+                }
+            }
+            
+            var pAch = [];
+            for (var k = 0; k < achievements.length; k++) {
+                if (achievements[k].participantId === p.id) {
+                    pAch.push(achievements[k]);
+                }
+            }
+            
+            var initCount = 0;
+            for (var m = 0; m < pTasks.length; m++) {
+                if (pTasks[m].initiative) initCount++;
+            }
+            
+            document.getElementById('tal-days').textContent = pTasks.length;
+            document.getElementById('tal-tasks').textContent = initCount;
+            document.getElementById('tal-ach').textContent = pAch.length;
+            
+            var xpMax = p.level * 100;
+            document.getElementById('tal-level').textContent = p.level;
+            document.getElementById('tal-level-num').textContent = p.level;
+            document.getElementById('tal-xp').textContent = p.xp;
+            document.getElementById('tal-xp-max').textContent = xpMax;
+            document.getElementById('tal-xp-bar').style.width = Math.min((p.xp / xpMax * 100), 100) + '%';
+            
+            renderRadar(p, pTasks);
+            renderDISC(p, pTasks);
+            renderCompetencies(p, pTasks);
+            renderProjects(p, pTasks);
+            renderITSkills(p, pTasks);
+            renderCareer(p, pTasks);
+        }
+
+        function renderRadar(p, pTasks) {
+            var canvas = document.getElementById('radarChart');
+            var ctx = canvas.getContext('2d');
+            
+            if (radarChart) {
+                radarChart.destroy();
+            }
+            
+            var bio = 0, eng = 0, media = 0, init = 0;
+            for (var i = 0; i < pTasks.length; i++) {
+                if (pTasks[i].track === 'bio') bio++;
+                else if (pTasks[i].track === 'eng') eng++;
+                else if (pTasks[i].track === 'media') media++;
+                if (pTasks[i].initiative) init++;
+            }
+            
+            var data = [
+                Math.min(bio * 15 + 40, 100),
+                Math.min(media * 12 + init * 5 + 35, 100),
+                Math.min(eng * 10 + init * 8 + 40, 100),
+                Math.min(media * 15 + init * 3 + 45, 100),
+                Math.min(eng * 12 + init * 5 + 35, 100),
+                Math.min(init * 8 + 50, 100),
+                Math.min(init * 10 + 30, 100),
+                Math.min(eng * 10 + 40, 100),
+                Math.min(bio * 12 + 35, 100),
+                Math.min(pTasks.length * 5 + 40, 100),
+                Math.min(media * 8 + init * 5 + 45, 100),
+                Math.min(p.level * 8 + init * 5, 100)
+            ];
+            
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Критич.', 'Креатив.', 'Команда', 'Коммуник.', 'Проблемы', 'Адаптив.', 'Лидерство', 'Техн.', 'Наука', 'Тайм', 'Эмпатия', 'Устойчив.'],
+                    datasets: [{
+                        label: p.name,
+                        data: data,
+                        backgroundColor: 'rgba(0,212,170,0.2)',
+                        borderColor: '#00d4aa',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#00d4aa'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: { stepSize: 20, color: '#9ca3af', backdropColor: 'transparent' },
+                            gridColor: 'rgba(255,255,255,0.1)',
+                            pointLabels: { color: '#9ca3af', font: { size: 11 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#fff' } }
+                    }
+                }
+            });
+        }
+
+        function renderDISC(p, pTasks) {
+            var init = 0, bio = 0, eng = 0, media = 0;
+            for (var i = 0; i < pTasks.length; i++) {
+                if (pTasks[i].initiative) init++;
+                if (pTasks[i].track === 'bio') bio++;
+                else if (pTasks[i].track === 'eng') eng++;
+                else if (pTasks[i].track === 'media') media++;
+            }
+            
+            var d = Math.min(50 + init * 4 + eng * 2, 95);
+            var i = Math.min(50 + media * 5 + init * 3, 95);
+            var s = Math.min(50 + bio * 4 + init * 2, 95);
+            var c = Math.min(50 + eng * 4, 95);
+            
+            var vals = [['D', d], ['I', i], ['S', s], ['C', c]];
+            vals.sort(function(a, b) { return b[1] - a[1]; });
+            var discType = vals[0][0] + vals[1][0];
+            
+            var typeInfo = DISC_TYPES[discType] || DISC_TYPES['SI'];
+            document.getElementById('disc-type-name').textContent = discType;
+            document.getElementById('disc-type-desc').textContent = typeInfo.desc;
+            
+            var traitsHtml = '';
+            for (var j = 0; j < typeInfo.traits.length; j++) {
+                traitsHtml += '<span class="disc-trait">' + typeInfo.traits[j] + '</span>';
+            }
+            document.getElementById('disc-traits').innerHTML = traitsHtml;
+            
+            document.getElementById('disc-d').style.width = d + '%';
+            document.getElementById('disc-d').textContent = d + '%';
+            document.getElementById('disc-i').style.width = i + '%';
+            document.getElementById('disc-i').textContent = i + '%';
+            document.getElementById('disc-s').style.width = s + '%';
+            document.getElementById('disc-s').textContent = s + '%';
+            document.getElementById('disc-c').style.width = c + '%';
+            document.getElementById('disc-c').textContent = c + '%';
+            
+            var canvas = document.getElementById('discChart');
+            var ctx = canvas.getContext('2d');
+            if (discChart) {
+                discChart.destroy();
+            }
+            
+            discChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['D', 'I', 'S', 'C'],
+                    datasets: [{
+                        data: [d, i, s, c],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#9ca3af', boxWidth: 12, padding: 10 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderCompetencies(p, pTasks) {
+            var bio = 0, eng = 0, media = 0, init = 0;
+            for (var i = 0; i < pTasks.length; i++) {
+                if (pTasks[i].track === 'bio') bio++;
+                else if (pTasks[i].track === 'eng') eng++;
+                else if (pTasks[i].track === 'media') media++;
+                if (pTasks[i].initiative) init++;
+            }
+            
+            var values = [
+                Math.min(bio * 15 + 40, 100),
+                Math.min(media * 12 + init * 5 + 35, 100),
+                Math.min(eng * 10 + init * 8 + 40, 100),
+                Math.min(media * 15 + init * 3 + 45, 100),
+                Math.min(eng * 12 + init * 5 + 35, 100),
+                Math.min(init * 8 + 50, 100),
+                Math.min(init * 10 + 30, 100),
+                Math.min(eng * 10 + 40, 100),
+                Math.min(bio * 12 + 35, 100),
+                Math.min(pTasks.length * 5 + 40, 100),
+                Math.min(media * 8 + init * 5 + 45, 100),
+                Math.min(p.level * 8 + init * 5, 100)
+            ];
+            
+            var html = '';
+            for (var j = 0; j < COMPETENCIES.length; j++) {
+                var c = COMPETENCIES[j];
+                html += '<div class="comp-item" onclick="showCompDetail(' + j + ')">' +
+                    '<div class="comp-icon">' + c.icon + '</div>' +
+                    '<div class="comp-name">' + c.name + '</div>' +
+                    '<div class="comp-value">' + Math.round(values[j]) + '%</div>' +
+                    '<div class="comp-bar"><div class="comp-fill" style="width:' + values[j] + '%"></div></div>' +
+                    '</div>';
+            }
+            document.getElementById('competencies').innerHTML = html;
+        }
+
+        function showCompDetail(index) {
+            var c = COMPETENCIES[index];
+            document.getElementById('modal-title').textContent = c.icon + ' ' + c.name;
+            document.getElementById('modal-body').innerHTML = '<p><strong>Описание:</strong> ' + c.desc + '</p>';
+            document.getElementById('comp-modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('comp-modal').classList.remove('show');
+        }
+
+        function renderProjects(p, pTasks) {
+            var bio = 0, eng = 0, media = 0;
+            for (var i = 0; i < pTasks.length; i++) {
+                if (pTasks[i].track === 'bio') bio++;
+                else if (pTasks[i].track === 'eng') eng++;
+                else if (pTasks[i].track === 'media') media++;
+            }
+            
+            var html = '';
+            for (var j = 0; j < PROJECTS.length; j++) {
+                var pr = PROJECTS[j];
+                var status = 'planned';
+                var pct = 0;
+                
+                if ((pr.track === 'bio' && bio >= 3) || (pr.track === 'eng' && eng >= 3) || (pr.track === 'media' && media >= 3) || (pr.track === 'all' && pTasks.length >= 3)) {
+                    status = 'done';
+                    pct = 100;
+                } else if ((pr.track === 'bio' && bio >= 1) || (pr.track === 'eng' && eng >= 1) || (pr.track === 'media' && media >= 1) || (pr.track === 'all' && pTasks.length >= 1)) {
+                    status = 'progress';
+                    pct = (bio || eng || media || pTasks.length) * 20;
+                }
+                
+                var stText = { done: 'Завершён', progress: 'В процессе', planned: 'Запланирован' }[status];
+                
+                html += '<div class="project-item">' +
+                    '<div class="project-icon">' + pr.icon + '</div>' +
+                    '<div class="project-info"><div class="project-name">' + pr.name + '</div><div class="project-desc">' + pr.desc + ' (' + pct + '%)</div></div>' +
+                    '<div class="project-status status-' + status + '">' + stText + '</div>' +
+                    '</div>';
+            }
+            document.getElementById('projects').innerHTML = html;
+        }
+
+        function renderITSkills(p, pTasks) {
+            var eng = 0, media = 0, init = 0;
+            for (var i = 0; i < pTasks.length; i++) {
+                if (pTasks[i].track === 'eng') eng++;
+                else if (pTasks[i].track === 'media') media++;
+                if (pTasks[i].initiative) init++;
+            }
+            
+            var levels = [
+                Math.min(eng * 20 + init * 5 + 30, 100),
+                Math.min(media * 15 + init * 5 + 40, 100),
+                Math.min(eng * 10 + 20, 100),
+                Math.min(media * 15 + init * 5 + 35, 100),
+                Math.min(media * 12 + 30, 100),
+                Math.min(pTasks.length * 8 + init * 3 + 35, 100)
+            ];
+            
+            var colors = ['#00d4aa', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#22c55e'];
+            var html = '';
+            
+            for (var j = 0; j < IT_SKILLS.length; j++) {
+                var sk = IT_SKILLS[j];
+                var levelName = levels[j] >= 80 ? 'Эксперт' : levels[j] >= 50 ? 'Средний' : 'Базовый';
+                html += '<div class="it-skill">' +
+                    '<div class="it-skill-icon">' + sk.icon + '</div>' +
+                    '<div class="it-skill-name">' + sk.name + '</div>' +
+                    '<div class="it-skill-level">' + levelName + ' (' + Math.round(levels[j]) + '%)</div>' +
+                    '<div class="it-skill-bar"><div class="it-skill-fill" style="width:' + levels[j] + '%;background:' + colors[j] + '"></div></div>' +
+                    '</div>';
+            }
+            document.getElementById('it-skills').innerHTML = html;
+        }
+
+        function renderCareer(p, pTasks) {
+            var bio = 0, eng = 0, media = 0;
+            for (var i = 0; i < pTasks.length; i++) {
+                if (pTasks[i].track === 'bio') bio++;
+                else if (pTasks[i].track === 'eng') eng++;
+                else if (pTasks[i].track === 'media') media++;
+            }
+            
+            var icon = '🧬';
+            var title = 'Био профиль';
+            var desc = 'Высокий потенциал в науке';
+            var tags = ['Биоинженерия', 'Научные исследования'];
+            
+            if (media > bio && media > eng) {
+                icon = '🎬';
+                title = 'Медиа профиль';
+                desc = 'Творческий потенциал';
+                tags = ['Видеопроизводство', 'Блогинг'];
+            } else if (eng > bio) {
+                icon = '⚙️';
+                title = 'Инженерный профиль';
+                desc = 'Технические решения';
+                tags = ['Робототехника', 'Программирование'];
+            }
+            
+            var tagsHtml = '';
+            for (var j = 0; j < tags.length; j++) {
+                tagsHtml += '<span class="career-tag">' + tags[j] + '</span>';
+            }
+            
+            document.getElementById('career').innerHTML = 
+                '<div class="career-icon">' + icon + '</div>' +
+                '<div class="career-info"><h3>' + title + '</h3><p>' + desc + '</p><div class="career-tags">' + tagsHtml + '</div></div>';
+        }
+
+        function saveToPDF() {
+            var element = document.getElementById('talent-content');
+            var opt = {
+                margin: 10,
+                filename: 'BioCrafters2026_' + selectedParticipant.name + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+            showToast('PDF сохранён!');
+        }
+
+        function renderDashboard() {
+            var squadFilter = document.getElementById('dash-search-squad').value;
+            var shiftFilter = document.getElementById('dash-search-shift').value;
+            
+            var filtered = [];
+            for (var i = 0; i < participants.length; i++) {
+                var p = participants[i];
+                var matchSquad = !squadFilter || p.squad === squadFilter;
+                var matchShift = !shiftFilter || p.shift === shiftFilter;
+                if (matchSquad && matchShift) {
+                    filtered.push(p);
+                }
+            }
+            
+            var filteredIds = [];
+            for (var j = 0; j < filtered.length; j++) {
+                filteredIds.push(filtered[j].id);
+            }
+            
+            var pTasks = [];
+            for (var k = 0; k < tasks.length; k++) {
+                if (filteredIds.indexOf(tasks[k].participantId) !== -1) {
+                    pTasks.push(tasks[k]);
+                }
+            }
+            
+            var totalTasks = pTasks.length;
+            
+            var totalBadges = 0;
+            for (var m = 0; m < achievements.length; m++) {
+                if (filteredIds.indexOf(achievements[m].participantId) !== -1) {
+                    totalBadges++;
+                }
+            }
+            
+            var totalScore = 0;
+            for (var n = 0; n < pTasks.length; n++) {
+                totalScore += pTasks[n].score || 0;
+            }
+            var avg = totalTasks > 0 ? (totalScore / totalTasks).toFixed(1) : 0;
+            
+            document.getElementById('total-participants').textContent = filtered.length;
+            document.getElementById('total-tasks').textContent = totalTasks;
+            document.getElementById('total-badges').textContent = totalBadges;
+            document.getElementById('avg-score').textContent = avg;
+            
+            var grid = document.getElementById('dashboard-grid');
+            var html = '';
+            
+            for (var p = 0; p < filtered.length; p++) {
+                var participant = filtered[p];
+                var pt = [];
+                for (var q = 0; q < tasks.length; q++) {
+                    if (tasks[q].participantId === participant.id) {
+                        pt.push(tasks[q]);
+                    }
+                }
+                
+                var pScoreTotal = 0;
+                for (var r = 0; r < pt.length; r++) {
+                    pScoreTotal += pt[r].score || 0;
+                }
+                var pScore = pt.length > 0 ? (pScoreTotal / pt.length).toFixed(1) : 0;
+                
+                var bioCount = 0, engCount = 0, mediaCount = 0;
+                for (var s = 0; s < pt.length; s++) {
+                    if (pt[s].track === 'bio') bioCount++;
+                    else if (pt[s].track === 'eng') engCount++;
+                    else if (pt[s].track === 'media') mediaCount++;
+                }
+                
+                html += '<div class="student-card">' +
+                    '<div class="student-avatar">' + participant.name.charAt(0) + '</div>' +
+                    '<div class="student-name">' + participant.name + '</div>' +
+                    '<div class="student-info">' + participant.age + ' лет · ' + participant.squad + '</div>' +
+                    '<div class="student-badges" style="margin-top:12px">' +
+                    '<span class="badge badge-bio">🧬 ' + bioCount + '</span>' +
+                    '<span class="badge badge-eng">⚙️ ' + engCount + '</span>' +
+                    '<span class="badge badge-media">🎬 ' + mediaCount + '</span>' +
+                    '</div>' +
+                    '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.min(pScore * 20, 100) + '%"></div></div>' +
+                    '</div>';
+            }
+            
+            grid.innerHTML = html;
+        }
+
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
